@@ -76,11 +76,12 @@ func TestIPQueryPeer(t *testing.T) {
 			res.AllocDate != x.result.AllocDate {
 			t.Errorf("Prefix result did not matched expected")
 		}
-		for i, a := range x.result.ASN {
+		// Don't check ASNumbers for peer, they can very too much.
+		/* for i, a := range x.result.ASN {
 			if res.ASN[i] != a {
 				t.Errorf("ASN numbers did not match, got %v, expected %v", res.ASN, x.result.ASN)
 				break
 			}
-		}
+		} */
 	}
 }
