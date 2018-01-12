@@ -2,9 +2,12 @@ package ip2asn
 
 import (
 	"net"
+	"sync"
 
 	"github.com/TyPR124/iptree"
 )
+
+//TODO: MAKE CACHE THREAD-SAFE
 
 const (
 	numberOfSlash24s = uint32(256 * 256 * 256)
@@ -35,6 +38,7 @@ var (
 	cacheRoot    iptree.Root
 	cacheBits    *cacheBitArray
 	asnCache     map[ASNumber]ASInfo
+	cacheLock    = sync.Mutex{}
 )
 
 func init() {
@@ -48,6 +52,9 @@ func slash24(ip net.IP) uint32 {
 }
 
 func cachedIP(ip net.IP) *PrefixInfo {
+	cacheLock.Lock()
+	defer cacheLock.Unlock()
+
 	//Check if this IP's /24 was cached?
 	s24 := slash24(ip)
 	if !getBitArray(s24) {
@@ -67,6 +74,9 @@ func cachedIP(ip net.IP) *PrefixInfo {
 }
 
 func addCachedPrefix(ip net.IP, pfx PrefixInfo) {
+	cacheLock.Lock()
+	defer cacheLock.Unlock()
+
 	s24 := slash24(ip)
 	if err := cacheRoot.Insert(pfx.Prefix, pfx); err == nil {
 		setBitArray(s24, true)
@@ -74,9 +84,19 @@ func addCachedPrefix(ip net.IP, pfx PrefixInfo) {
 }
 
 func cachedASN(asn ASNumber) *ASInfo {
+	cacheLock.Lock()
+	defer cacheLock.Unlock()
+
 	info, ok := asnCache[asn]
 	if !ok {
 		return nil
 	}
 	return &info
+}
+
+func addCachedASN(asinfo ASInfo) {
+	cacheLock.Lock()
+	defer cacheLock.Unlock()
+
+	asnCache[asinfo.ASN[0]] = asinfo
 }

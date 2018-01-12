@@ -59,7 +59,7 @@ func QueryASN(asn ASNumber) (*ASInfo, error) {
 	}
 
 	if cacheEnabled {
-		asnCache[asn] = *ret
+		addCachedASN(*ret)
 	}
 
 	return ret, nil
