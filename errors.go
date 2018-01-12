@@ -28,3 +28,6 @@ var ErrInvalidPrefixRecord = errors.New("invalid prefix record")
 
 //ErrInvalidRelation indicates a Relation value received was invalid
 var ErrInvalidRelation = errors.New("invlid relation")
+
+//ErrCacheDeserializationError indicates a problem loading cache
+var ErrCacheDeserializationError = errors.New("Could not deserialize value")

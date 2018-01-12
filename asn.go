@@ -40,6 +40,11 @@ func parseASInfo(record string) (*ASInfo, error) {
 
 //QueryASN takes an ASNumber and returns an *ASInfo
 func QueryASN(asn ASNumber) (*ASInfo, error) {
+	if cacheEnabled {
+		if info := cachedASN(asn); info != nil {
+			return info, nil
+		}
+	}
 	q := asnQueryHost(asn)
 	a, err := net.LookupTXT(q)
 	if err != nil {
@@ -51,6 +56,10 @@ func QueryASN(asn ASNumber) (*ASInfo, error) {
 	ret, err := parseASInfo(a[0])
 	if err != nil {
 		return nil, err
+	}
+
+	if cacheEnabled {
+		asnCache[asn] = *ret
 	}
 
 	return ret, nil

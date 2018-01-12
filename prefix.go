@@ -26,6 +26,11 @@ type PrefixInfo struct {
 
 //QueryIP takes an IPAddr and returns a *PrefixInfo
 func QueryIP(ip net.IP, rel Relation) (*PrefixInfo, error) {
+	if cacheEnabled && len(ip) == net.IPv4len {
+		if cached := cachedIP(ip); cached != nil {
+			return cached, nil
+		}
+	}
 	q, err := ipQueryHost(ip, rel)
 	if err != nil {
 		return nil, err
@@ -41,6 +46,10 @@ func QueryIP(ip net.IP, rel Relation) (*PrefixInfo, error) {
 	ret, err := parsePrefixInfo(a[0], rel)
 	if err != nil {
 		return nil, err
+	}
+
+	if cacheEnabled && len(ip) == net.IPv4len {
+		addCachedPrefix(ip, *ret)
 	}
 
 	return ret, nil
