@@ -20,8 +20,9 @@ Saving and loading cache will require two files, an index file and a data file.
 
 */
 
+//EnableCache Enables caching PrefixInfo and ASInfo objects
+//Caching is thread safe, however calling EnableCache and DisableCache is NOT thread safe
 func EnableCache() {
-	//Initialize bit array
 	if !cacheEnabled {
 		cacheBits = new(cacheBitArray) //2MB bit array
 		asnCache = map[ASNumber]ASInfo{}
@@ -30,6 +31,8 @@ func EnableCache() {
 	}
 }
 
+//DisableCache Disables caching PrefixInfo and ASInfo objects
+//Caching is thread safe, however calling EnableCache and DisableCache is NOT thread safe
 func DisableCache() {
 	cacheBits = nil
 	asnCache = nil
@@ -37,10 +40,14 @@ func DisableCache() {
 	cacheEnabled = false
 }
 
+//SaveCache is not implimented yet
+//SaveCache will eventually allow saving cache to disk
 func SaveCache() error {
 	return ErrNotImplimented
 }
 
+//LoadCache is not implimented yet
+//LoadCache will eventually allow loading cache from disk
 func LoadCache() error {
 	return ErrNotImplimented
 }
